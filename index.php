@@ -12,7 +12,7 @@
  * requests are expected to be of type application/json, NOT form-data or
  * www-form-urlencoded.
  * --------------------------------------------------------------------------
- * Last updated 10/15/2015
+ * Last updated 10/24/2015
  */
 
 include("includes/connect.inc.php");
@@ -70,9 +70,9 @@ if (isset($_GET["users"])) {
     if ($request_type == "add_item") {
         
         // Collect information from POST request
-        $item_id = $request->itemID; // the M-tag for the item
-        $item_desc = $request->itemDescription; // the description of the item
-        $item_loc = $request->itemLocation; // item location (room #)
+        $item_id = $mysqli->real_escape_string(filter_var($request->itemID, FILTER_SANITIZE_STRING)); // the M-tag for the item
+        $item_desc = $mysqli->real_escape_string(filter_var($request->itemDescription, FILTER_SANITIZE_STRING)); // the description of the item
+        $item_loc = filter_var($request->itemLocation, FILTER_SANITIZE_NUMBER_INT); // item location (room #)
         
         // Construct query
         $query = "INSERT INTO inventory (item_id, item_desc, item_loc) VALUES (?, ?, ?)";
