@@ -163,7 +163,22 @@ if (isset($_GET["users"])) {
     /* Handle POST request deauthorizing user */
     else if ($request_type == "deauth_user") {
         
-        // remove user handler TBA
+        // Collect information from POST request
+        $username = $request->userName;
+        
+        // Construct query
+        $query = "DELETE FROM users WHERE username = ?";
+        
+        // Prepare the query, bind username and execute
+        if ($stmt = $mysqli->prepare($query)) {
+            $stmt->bind_param("s", $username);
+            $stmt->execute;
+            $stmt->close();
+            echo "{\"result\":\"success\",\"message\":\"User " . $username . " has been removed from the system.\"}";
+        } else {
+            // if we weren't able to prepare the query, die and tell user.
+            die("{\"result\":\"error\",\"message\":\"Unable to prepare your request. (5)\"}");
+        }
         
     }
     
