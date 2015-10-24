@@ -140,7 +140,23 @@ if (isset($_GET["users"])) {
     /* Handle POST request adding a user */
     else if ($request_type == "auth_user") {
         
-        // add user handler TBA
+        // Collect information from the POST request
+        $username = $request->userName;
+        $password = $request->password;
+        
+        // Construct query (call SHA1 to hash password)
+        $query = "INSERT INTO users (username, password) VALUES (?, SHA1(?))";
+        
+        // Prepare the query, bind the values, and execute the command
+        if ($stmt = $mysqli->prepare($query)) {
+            $stmt->bind_param("ss", $username, $password);
+            $stmt->execute;
+            $stmt->close();
+            echo "{\"result\":\"success\",\"message\":\"User " . $username . " is now authorized to access the system.\"}";
+        } else {
+            // if we weren't able to prepare the query, die and tell user.
+            die("{\"result\":\"error\",\"message\":\"Unable to prepare your request. (4)\"}");
+        }
         
     }
     
