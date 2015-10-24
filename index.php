@@ -144,19 +144,41 @@ if (isset($_GET["users"])) {
         $username = $request->userName;
         $password = $request->password;
         
-        // Construct query (call SHA1 to hash password)
-        $query = "INSERT INTO users (username, password) VALUES (?, SHA1(?))";
+        $numRows = 0; // number of rows
         
-        // Prepare the query, bind the values, and execute the command
+        // Construct query to check to see if user exists, add user iff username is not taken
+        $query = "SELECT * FROM users WHERE username = ?";
+        
+        // Bind the username and execute the query, fetching the number of rows returned in the result
         if ($stmt = $mysqli->prepare($query)) {
-            $stmt->bind_param("ss", $username, $password);
-            $stmt->execute;
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $stmt->store_result();
+            $numRows = $stmt->num_rows;
             $stmt->close();
-            echo "{\"result\":\"success\",\"message\":\"User " . $username . " is now authorized to access the system.\"}";
-        } else {
-            // if we weren't able to prepare the query, die and tell user.
-            die("{\"result\":\"error\",\"message\":\"Unable to prepare your request. (4)\"}");
         }
+        
+        // If the number of rows returned is 0, we can continue (user does not exist)
+        if ($numRows <= 0) {
+            // Construct query (call SHA1 to hash password)
+            $query = "INSERT INTO users (username, password) VALUES (?, SHA1(?))";
+
+            // Prepare the query, bind the values, and execute the command
+            if ($stmt = $mysqli->prepare($query)) {
+                $stmt->bind_param("ss", $username, $password);
+                $stmt->execute;
+                $stmt->close();
+                echo "{\"result\":\"success\",\"message\":\"User " . $username . " is now authorized to access the system.\"}";
+            } else {
+                // if we weren't able to prepare the query, die and tell user.
+                die("{\"result\":\"error\",\"message\":\"Unable to prepare your request. (4)\"}");
+            }
+            
+        // If the number of rows returned is greater than 0, the user exists and they should pick a different username
+        } else {
+            die("{\"result\":\"error\",\"message\":\"User already exists, please choose a different username. (4)\"}");
+        }
+        
         
     }
     
