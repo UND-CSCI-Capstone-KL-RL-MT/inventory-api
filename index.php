@@ -12,7 +12,12 @@
  * requests are expected to be of type application/json, NOT form-data or
  * www-form-urlencoded.
  * --------------------------------------------------------------------------
- * Last updated 10/24/2015
+ * Last updated 11/30/2015 by Ben Alman
+ * --------------------------------------------------------------------------
+ * TODOS:
+ * - Continue testing API
+ * - Add new request handlers as necessary
+ * - Add comments to connect file
  */
 
 include("includes/connect.inc.php");
