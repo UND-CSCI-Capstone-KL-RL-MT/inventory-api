@@ -47,16 +47,16 @@ if (isset($_GET["users"])) {
 /* When a GET request is made for inventory items */
 } else if (isset($_GET["inventory"])) {
     
-	$query = "SELECT item_id, item_desc, item_loc FROM inventory WHERE 1";
+	$query = "SELECT item_id, item_desc, item_building, item_loc FROM inventory WHERE 1";
 
 	if ($stmt = $mysqli->prepare($query)) {
 	
 		$stmt->execute();
 		$stmt->store_result();
-        $stmt->bind_result($item_id, $item_desc, $item_loc);
+        $stmt->bind_result($item_id, $item_desc, $item_building, $item_loc);
 		$result_array = array();
         while($stmt->fetch()) {
-            array_push($result_array, (object) array("item_id" => $item_id, "item_description" => $item_desc, "item_location" => $item_loc));
+            array_push($result_array, (object) array("item_id" => $item_id, "item_description" => $item_desc, "item_building" => $item_building, "item_location" => $item_loc));
         }
 		$stmt->free_result();
 		$stmt->close();
@@ -78,13 +78,14 @@ if (isset($_GET["users"])) {
         $item_id = $mysqli->real_escape_string(filter_var($request->itemID, FILTER_SANITIZE_STRING)); // the M-tag for the item
         $item_desc = $mysqli->real_escape_string(filter_var($request->itemDescription, FILTER_SANITIZE_STRING)); // the description of the item
         $item_loc = filter_var($request->itemLocation, FILTER_SANITIZE_NUMBER_INT); // item location (room #)
+				$item_building = filter_var($request->itemBuilding, FILTER_SANITIZE_STRING));
         
         // Construct query
-        $query = "INSERT INTO inventory (item_id, item_desc, item_loc) VALUES (?, ?, ?)";
+        $query = "INSERT INTO inventory (item_id, item_desc, item_loc, item_building) VALUES (?, ?, ?, ?)";
         
         // Prepare the query, bind the ID/description/location, and execute.
         if ($stmt = $mysqli->prepare($query)) {
-            $stmt->bind_param("ssi", $item_id, $item_desc, $item_loc);
+            $stmt->bind_param("ssis", $item_id, $item_desc, $item_loc, $item_building);
             $stmt->execute();
             $stmt->close();
             echo "{\"result\":\"success\",\"message\":\"Item successfully added to inventory.\"}";
