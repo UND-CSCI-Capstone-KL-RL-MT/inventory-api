@@ -55,7 +55,7 @@ if ($numRows <= 0) {
 		// Construct the success email and send it.
 		$msg = "{$first_name},\r\n\r\nYou have been given access to the UND Inventory Management system. Please log in using your email address and the following password: {$password}.\r\n\r\nUpon logging in, you will need to choose a new password for all future log ins.\r\n\r\nTo log in, visit the following URL: {$system_url}\r\n\r\nThank you.";
 		$msg = wordwrap($msg, 70, "\r\n");
-		$headers = "From: {$first_name} {$last_name} {$username}" . "\r\n";
+		$headers = "From: {$first_name} {$last_name} <{$username}>" . "\r\n";
 		
 		mail($username, 'UND Inventory Management Information', $msg, $headers);
 
