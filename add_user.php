@@ -22,7 +22,7 @@ $postdata = file_get_contents("php://input");
 $request = json_decode($postdata);
 $first_name = $request->first_name;
 $last_name = $request->last_name;
-$username = $request->username;
+$username = $request->email;
 $password = generatePassword();
 
 $numRows = 0; // number of rows
