@@ -46,6 +46,7 @@ if ($numRows <= 0) {
 
 	// Prepare the query, bind the values, and execute the command
 	if ($stmt = $mysqli->prepare($query)) {
+		die("INSERT INTO users (first_name, last_name, username, password) VALUES ({$first_name}, {$last_name}, {$username}, SHA1({password}))");
 		$stmt->bind_param("ssss", $first_name, $last_name, $username, $password);
 		$stmt->execute;
 		$stmt->close();
