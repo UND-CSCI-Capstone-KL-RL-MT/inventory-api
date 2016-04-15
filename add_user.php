@@ -12,7 +12,7 @@ function generatePassword($length = 12) {
         $randPass .= $characters[rand(0, $charactersLength - 1)];
     }
 	
-    return $randomPass;
+    return $randPass;
 	
 }
 
@@ -23,7 +23,7 @@ $request = json_decode($postdata);
 $first_name = $request->first_name;
 $last_name = $request->last_name;
 $username = $request->email;
-$password = generatePassword();
+$password = generatePassword(12);
 
 $numRows = 0; // number of rows
 
@@ -46,7 +46,8 @@ if ($numRows <= 0) {
 
 	// Prepare the query, bind the values, and execute the command
 	if ($stmt = $mysqli->prepare($query)) {
-		die("INSERT INTO users (first_name, last_name, username, password) VALUES ({$first_name}, {$last_name}, {$username}, SHA1({password}))");
+		echo $password;
+		die("INSERT INTO users (first_name, last_name, username, password) VALUES ({$first_name}, {$last_name}, {$username}, SHA1({$password}))");
 		$stmt->bind_param("ssss", $first_name, $last_name, $username, $password);
 		$stmt->execute;
 		$stmt->close();
