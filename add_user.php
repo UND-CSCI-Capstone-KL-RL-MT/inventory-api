@@ -25,6 +25,7 @@ $first_name = $request->first_name;
 $last_name = $request->last_name;
 $username = $request->email;
 $password = generatePassword(12);
+$is_admin = $request->is_admin;
 
 $numRows = 0; // number of rows
 
@@ -43,11 +44,11 @@ if ($stmt = $mysqli->prepare($query)) {
 // If the number of rows returned is 0, we can continue (user does not exist)
 if ($numRows <= 0) {
 	// Construct query (call SHA1 to hash password)
-	$query = "INSERT INTO users (first_name, last_name, username, password) VALUES (?, ?, ?, SHA1(?))";
+	$query = "INSERT INTO users (first_name, last_name, username, password, is_admin) VALUES (?, ?, ?, SHA1(?), ?)";
 	
 	// Prepare the query, bind the values, and execute the command
 	if ($stmt = $mysqli->prepare($query)) {
-		$stmt->bind_param("ssss", $first_name, $last_name, $username, $password);
+		$stmt->bind_param("ssssi", $first_name, $last_name, $username, $password, $is_admin);
 		$stmt->execute();
 		$stmt->close();
 
