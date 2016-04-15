@@ -1,5 +1,29 @@
 <?php
 
+function jsonpp($json, $istr='  ')
+{
+    $q = FALSE;
+    $result = '';
+    for($p=$i=0; isset($json[$p]); $p++)
+    {
+        if($json[$p] == '"' && ($p>0?$json[$p-1]:'') != '\\')
+        {
+            $q=!$q;
+        }
+        else if(in_array($json[$p], array('}', ']')) && !$q)
+        {
+            $result .= "\n".str_repeat($istr, --$i);
+        }
+        $result .= $json[$p];
+        if(in_array($json[$p], array(',', '{', '[')) && !$q)
+        {
+            $i += in_array($json[$p], array('{', '['));
+            $result .= "\n".str_repeat($istr, $i);
+        }
+    }
+    return $result;
+}
+
 /**
  * INVENTORY SYSTEM API DESCRIPTION
  * --------------------------------------------------------------------------
@@ -78,7 +102,7 @@ if (isset($_GET["users"])) {
         $item_id = $mysqli->real_escape_string(filter_var($request->itemID, FILTER_SANITIZE_STRING)); // the M-tag for the item
         $item_desc = $mysqli->real_escape_string(filter_var($request->itemDescription, FILTER_SANITIZE_STRING)); // the description of the item
         $item_loc = filter_var($request->itemLocation, FILTER_SANITIZE_NUMBER_INT); // item location (room #)
-				$item_building = filter_var($request->itemBuilding, FILTER_SANITIZE_STRING));
+				$item_building = $mysqli->real_escape_string(filter_var($request->itemBuilding, FILTER_SANITIZE_STRING));
         
         // Construct query
         $query = "INSERT INTO inventory (item_id, item_desc, item_loc, item_building) VALUES (?, ?, ?, ?)";
