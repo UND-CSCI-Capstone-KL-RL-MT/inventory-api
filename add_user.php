@@ -1,6 +1,7 @@
 <?php
 
 include('includes/connect.inc.php');
+$system_url = "http://people.cs.und.edu/~balman/inventory-web-app/";
 
 function generatePassword($length = 12) {
 	
@@ -43,13 +44,11 @@ if ($stmt = $mysqli->prepare($query)) {
 if ($numRows <= 0) {
 	// Construct query (call SHA1 to hash password)
 	$query = "INSERT INTO users (first_name, last_name, username, password) VALUES (?, ?, ?, SHA1(?))";
-
+	
 	// Prepare the query, bind the values, and execute the command
 	if ($stmt = $mysqli->prepare($query)) {
-		echo $password;
-		die("INSERT INTO users (first_name, last_name, username, password) VALUES ({$first_name}, {$last_name}, {$username}, SHA1({$password}))");
 		$stmt->bind_param("ssss", $first_name, $last_name, $username, $password);
-		$stmt->execute;
+		$stmt->execute();
 		$stmt->close();
 
 		// Construct the success email and send it.
