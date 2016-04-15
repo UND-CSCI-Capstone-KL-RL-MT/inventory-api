@@ -1,29 +1,5 @@
 <?php
 
-function jsonpp($json, $istr='  ')
-{
-    $q = FALSE;
-    $result = '';
-    for($p=$i=0; isset($json[$p]); $p++)
-    {
-        if($json[$p] == '"' && ($p>0?$json[$p-1]:'') != '\\')
-        {
-            $q=!$q;
-        }
-        else if(in_array($json[$p], array('}', ']')) && !$q)
-        {
-            $result .= "\n".str_repeat($istr, --$i);
-        }
-        $result .= $json[$p];
-        if(in_array($json[$p], array(',', '{', '[')) && !$q)
-        {
-            $i += in_array($json[$p], array('{', '['));
-            $result .= "\n".str_repeat($istr, $i);
-        }
-    }
-    return $result;
-}
-
 /**
  * INVENTORY SYSTEM API DESCRIPTION
  * --------------------------------------------------------------------------
@@ -171,8 +147,10 @@ if (isset($_GET["users"])) {
     else if ($request_type == "auth_user") {
         
         // Collect information from the POST request
+		$first_name = $request->firstName;
+		$last_name = $request->lastName;
         $username = $request->userName;
-        $password = $request->password;
+		$password = generatePassword();
         
         $numRows = 0; // number of rows
         
@@ -191,13 +169,20 @@ if (isset($_GET["users"])) {
         // If the number of rows returned is 0, we can continue (user does not exist)
         if ($numRows <= 0) {
             // Construct query (call SHA1 to hash password)
-            $query = "INSERT INTO users (username, password) VALUES (?, SHA1(?))";
+            $query = "INSERT INTO users (first_name, last_name, username, password) VALUES (?, ?, ?, SHA1(?))";
 
             // Prepare the query, bind the values, and execute the command
             if ($stmt = $mysqli->prepare($query)) {
-                $stmt->bind_param("ss", $username, $password);
+                $stmt->bind_param("ssss", $first_name, $last_name, $username, $password);
                 $stmt->execute;
                 $stmt->close();
+				
+				// Construct the success email and send it.
+				$msg = "{$first_name},\r\n\r\nYou have been given access to the UND Inventory Management system. Please log in using your email address and the following password: {$password}.\r\n\r\nUpon logging in, you will need to choose a new password for all future log ins.\r\n\r\nTo log in, visit the following URL: {$system_url}\r\n\r\nThank you.";
+				$msg = wordwrap($msg, 70, "\r\n");
+				mail($username, 'UND Inventory Management Information', $msg);
+				
+				
                 echo "{\"result\":\"success\",\"message\":\"User " . $username . " is now authorized to access the system.\"}";
             } else {
                 // if we weren't able to prepare the query, die and tell user.
@@ -234,4 +219,18 @@ if (isset($_GET["users"])) {
         
     }
     
+}
+
+function generatePassword($length = 12) {
+	
+    $characters = '!@#$%^&*0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randPass = '';
+	
+    for ($i = 0; $i < $length; $i++) {
+        $randPass .= $characters[rand(0, $charactersLength - 1)];
+    }
+	
+    return $randomPass;
+	
 }
