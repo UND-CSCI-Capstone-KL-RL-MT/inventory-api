@@ -5,7 +5,7 @@ include('includes/connect.inc.php');
 // Collect information from POST request
 $postdata = file_get_contents("php://input");
 $request = json_decode($postdata);
-$user_id = $request->id;
+$user_id = $request->user_id;
 
 // Construct query
 $query = "DELETE FROM users WHERE user_id = ?";
