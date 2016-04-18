@@ -37,7 +37,7 @@ if ($numRows == 1) {
 			$stmt->execute();
 			$stmt->close();
 
-			echo "{\"result\":\"success\",\"message\":\"" . $first_name . "'s" " account has been updated.\"}";
+			echo "{\"result\":\"success\",\"message\":\"" . $first_name . "'s account has been updated.\"}";
 		} else {
 			// if we weren't able to prepare the query, die and tell user.
 			die("{\"result\":\"error\",\"message\":\"Unable to prepare your request. (4)\"}");
