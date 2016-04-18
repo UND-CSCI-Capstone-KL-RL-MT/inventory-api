@@ -1,5 +1,7 @@
 <?php
 
+include('includes/connect.inc.php');
+
 // Collect information from the POST request
 
 $postdata = file_get_contents("php://input");
@@ -43,7 +45,7 @@ if ($numRows == 1) {
 			die("{\"result\":\"error\",\"message\":\"Unable to prepare your request. (4)\"}");
 		}
 	} else {
-		
+		// password exists
 	}
 
 // If the number of rows returned is greater than 0, the user exists and they should pick a different username
