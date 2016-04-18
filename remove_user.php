@@ -12,8 +12,8 @@ $query = "DELETE FROM users WHERE user_id = ?";
 
 // Prepare the query, bind username and execute
 if ($stmt = $mysqli->prepare($query)) {
-	$stmt->bind_param("s", $user_id);
-	$stmt->execute;
+	$stmt->bind_param("i", $user_id);
+	$stmt->execute();
 	$stmt->close();
 	echo "{\"result\":\"success\",\"message\":\"User " . $user_id . " has been removed from the system.\"}";
 } else {
