@@ -44,5 +44,7 @@ if ($numRows <= 0 ) {
 	// user not found or password does not match.
 	die("{\"result\":\"failure\",\"message\":\"Invalid login credentials. Please try again.\"}");
 } else {
+	session_regenerate_id(true);
+	$_SESSION['univ-sess'] = true;
 	echo("{\"result\":\"success\",\"message\":{\"user_id\":{$user_id},\"username\":\"{$username}\",\"first_name\":\"{$first_name}\",\"last_name\":\"{$last_name}\",\"is_admin\":{$is_admin}}}");
 }
