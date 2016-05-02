@@ -9,6 +9,7 @@ if (isset($_GET["filter"])) {
 	$filter = strtolower($_GET["filter"]); // filter specifies which field to filter by: description, item ID, room number, or all
 	$search = $mysqli->real_escape_string(filter_var($_GET["query"], FILTER_SANITIZE_STRING)); // the search query
 	$building = $mysqli->real_escape_string(filter_var($_GET["building"], FILTER_SANITIZE_STRING)); // the building the items should be in (opt)
+	$building = str_replace("+", " ", $building);
 	$query = "SELECT item_id, item_desc, item_building, item_loc FROM inventory WHERE"; // select items
 	
 	// switch case to add the appropriate LIKE clause to the query
