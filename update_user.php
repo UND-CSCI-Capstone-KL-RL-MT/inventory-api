@@ -11,7 +11,8 @@ $first_name = $request->first_name;
 $last_name = $request->last_name;
 $username = $request->email;
 $is_admin = $request->is_admin;
-$password = $request->password;
+$password = $request->current_password;
+$new_password = $request->new_password;
 
 $numRows = 0; // number of rows
 
@@ -45,7 +46,29 @@ if ($numRows == 1) {
 			die("{\"result\":\"error\",\"message\":\"Unable to prepare your request. (4)\"}");
 		}
 	} else {
-		// password exists
+		if ($new_password == "" || empty($new_password) || !isset($new_password)) {
+			$query = "UPDATE users SET username = ? WHERE user_id = ? AND password = SHA1(?)";
+			
+			if ($stmt = $mysqli->prepare($query)) {
+				$stmt->bind_param("sis", $username, $user_id, $password);
+				$stmt->execute();
+				$stmt->close();
+				echo "{\"result\":\"success\",\"message\":\"".$username."\"}";
+			} else {
+				die("{\"result\":\"error\",\"message\":\"Unable to prepare your request. (4)\"}");
+			}
+		} else {
+			$query = "UPDATE users SET username = ?, password = SHA1(?) WHERE user_id = ? AND password = SHA1(?)";
+
+			if ($stmt = $mysqli->prepare($query)) {
+				$stmt->bind_param("ssis", $username, $new_password, $user_id, $password);
+				$stmt->execute();
+				$stmt->close();
+				echo "{\"result\":\"success\",\"message\":\"".$username."\"}";
+			} else {
+				die("{\"result\":\"error\",\"message\":\"Unable to prepare your request. (4)\"}");
+			}
+		}
 	}
 
 // If the number of rows returned is greater than 0, the user exists and they should pick a different username

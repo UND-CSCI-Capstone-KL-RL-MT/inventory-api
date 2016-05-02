@@ -35,8 +35,10 @@ if ($stmt = $mysqli->prepare($query)) {
 	$stmt->bind_param("ss", $username, $password);
 	$stmt->execute();
 	$stmt->store_result();
-	$stmt->bind_result($user_id, $username, $first_name, $last_name, $is_admin);
 	$numRows = $stmt->num_rows;
+	$stmt->bind_result($user_id, $username, $first_name, $last_name, $is_admin);
+	$stmt->fetch();
+	$stmt->free_result();
 	$stmt->close();
 }
 
