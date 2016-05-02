@@ -4,8 +4,28 @@ include('includes/connect.inc.php');
 
 if (isset($_GET["filter"])) {
 	
-	$filter = $_GET["filter"];
-	$query = "SELECT item_id, item_desc, item_building, item_loc FROM inventory WHERE item_desc LIKE '%{$filter}%'";
+	$filter = strtolower($_GET["filter"]);
+	$search = $mysqli->real_escape_string(filter_var($_GET["query"], FILTER_SANITIZE_STRING));
+	$building = $mysqli->real_escape_string(filter_var($_GET["building"], FILTER_SANITIZE_STRING));
+	$query = "SELECT item_id, item_desc, item_building, item_loc FROM inventory WHERE";
+	
+	switch($filter) {
+		case 'description':
+			$query .= " item_desc LIKE '%{$search}%'";
+			break;
+		case 'id':
+			$query .= " item_id LIKE '%{$search}%'";
+			break;
+		case 'room':
+			$query .= " item_loc LIKE '%{$search}%'";
+			break;
+		default:
+			$query .= " item_desc LIKE '%{$search}%' OR item_id LIKE '%{$search}%' OR item_loc LIKE '%{$search}%'";
+	}
+	
+	if ($building != "" && isset($building)) {
+		$query .= " AND item_building = '{$building}'";
+	}
 	
 	if ($stmt = $mysqli->prepare($query)) {
 
