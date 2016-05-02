@@ -24,7 +24,7 @@ if (isset($_GET["filter"])) {
 			$query .= " item_loc LIKE '%{$search}%'";
 			break;
 		default:
-			$query .= " item_desc LIKE '%{$search}%' OR item_id LIKE '%{$search}%' OR item_loc LIKE '%{$search}%'";
+			$query .= " (item_desc LIKE '%{$search}%' OR item_id LIKE '%{$search}%' OR item_loc LIKE '%{$search}%')";
 	}
 	
 	// if we have a building, add it to the DB query
