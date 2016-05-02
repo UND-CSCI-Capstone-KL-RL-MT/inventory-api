@@ -2,13 +2,16 @@
 
 include('includes/connect.inc.php');
 
+// NOTE: $_GET filter must be set in order to filter down the data
 if (isset($_GET["filter"])) {
 	
-	$filter = strtolower($_GET["filter"]);
-	$search = $mysqli->real_escape_string(filter_var($_GET["query"], FILTER_SANITIZE_STRING));
-	$building = $mysqli->real_escape_string(filter_var($_GET["building"], FILTER_SANITIZE_STRING));
-	$query = "SELECT item_id, item_desc, item_building, item_loc FROM inventory WHERE";
+	// Get our variables
+	$filter = strtolower($_GET["filter"]); // filter specifies which field to filter by: description, item ID, room number, or all
+	$search = $mysqli->real_escape_string(filter_var($_GET["query"], FILTER_SANITIZE_STRING)); // the search query
+	$building = $mysqli->real_escape_string(filter_var($_GET["building"], FILTER_SANITIZE_STRING)); // the building the items should be in (opt)
+	$query = "SELECT item_id, item_desc, item_building, item_loc FROM inventory WHERE"; // select items
 	
+	// switch case to add the appropriate LIKE clause to the query
 	switch($filter) {
 		case 'description':
 			$query .= " item_desc LIKE '%{$search}%'";
@@ -23,10 +26,12 @@ if (isset($_GET["filter"])) {
 			$query .= " item_desc LIKE '%{$search}%' OR item_id LIKE '%{$search}%' OR item_loc LIKE '%{$search}%'";
 	}
 	
+	// if we have a building, add it to the DB query
 	if ($building != "" && isset($building)) {
 		$query .= " AND item_building = '{$building}'";
 	}
 	
+	// typical prepare and execute, return JSON array
 	if ($stmt = $mysqli->prepare($query)) {
 
 		$stmt->execute();
@@ -44,6 +49,7 @@ if (isset($_GET["filter"])) {
 	
 } else {
 	
+	// simple prepare and execute, select all items in database
 	$query = "SELECT item_id, item_desc, item_building, item_loc FROM inventory WHERE 1";
 
 	if ($stmt = $mysqli->prepare($query)) {
